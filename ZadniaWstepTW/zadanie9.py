@@ -1,0 +1,5 @@
+jk = ("Jan Kowalski", 18, "jk@student.edu.pl", 2003, "ul. Machonki 1")
+jn = ("Janusz Nicpoń", 21, "jn@student.edu.pl", 2000, "ul. Marszałka 5")
+sw = ("Samuel Wirgiliusz", 22, "sw@student.edu.pl", 1999, "ul. Eleorory 87")
+studenci = dict([("111000", jk), ("222000", jn), ("303030", sw)])
+print(studenci["111000"])
