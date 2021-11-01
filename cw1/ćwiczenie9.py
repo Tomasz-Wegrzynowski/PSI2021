@@ -1,0 +1,6 @@
+ms = ("Maciej Sulikowski", 22, "maciejs@student.edu.pl", 1999, "ul. Rataja 2")
+kz = ("Kamil Ziomek", 21, "kamilz@student.edu.pl", 2000, "ul. Paki 5")
+ps = ("Przemek Stary", 22, "przemeks@student.edu.pl", 1999, "ul. Zombie 82")
+wm = ("Wenezuel Manuel", 22, "wenezuelm@student.edu.pl", 1999, "ul. Ptaka 23")
+studenci = dict([("152858", ms), ("152234", kz), ("152256", ps), ("152898", wm)])
+print(studenci)

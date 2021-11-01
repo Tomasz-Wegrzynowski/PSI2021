@@ -1,0 +1,5 @@
+print('{:>10}'.format('test'))
+print('{:_<10}'.format('test'))
+print('{:^6}'.format('zip'))
+print('{:f}'.format(3.141592653589793))
+print('{:4d}'.format(42))
