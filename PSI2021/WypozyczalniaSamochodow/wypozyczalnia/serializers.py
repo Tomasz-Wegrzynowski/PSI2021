@@ -2,18 +2,41 @@ from rest_framework import serializers
 from .models import Klient, Samochod, Wypozyczenie
 
 
-class SamochodSerializer(serializers.ModelSerializer):
+class SamochodSerializer(serializers.HyperlinkedModelSerializer):
+    wypozyczenia = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='wypozyczenie-detail')
+
     class Meta:
         model = Samochod
-        fields = ['idSamochodu', 'numerRejestracyjny', 'marka', 'typ', 'kolor', 'liczbaMiejsc', 'liczbaDrzwi', 'typPaliwa', 'typSkrzyniBiegow', 'uszkodzenia']
+        fields = ['url', 'idSamochodu', 'numerRejestracyjny', 'marka', 'typ', 'kolor', 'liczbaMiejsc', 'liczbaDrzwi', 'typPaliwa', 'typSkrzyniBiegow', 'uszkodzenia', 'wypozyczenia']
+
+    def validate_liczbaMiejsc(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Liczba miejsc musi być wieksza niż 0", )
+        return value
+
+    def validate_liczbaDrzwi(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Liczba drzwi musi być wieksza niż 0", )
+        return value
 
 
-class KlientSerializer(serializers.ModelSerializer):
+class KlientSerializer(serializers.HyperlinkedModelSerializer):
+    wypozyczenia = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='wypozyczenie-detail')
+
     class Meta:
         model = Klient
-        fields = ['pesel', 'imie', 'nazwisko', 'kategoriaPrawajazdy', 'numerTelefonu', 'email']
+        fields = ['url', 'pesel', 'imie', 'nazwisko', 'kategoriaPrawajazdy', 'numerTelefonu', 'email', 'wypozyczenia']
 
-class WypozyczenieSerializer(serializers.ModelSerializer):
+
+class WypozyczenieSerializer(serializers.HyperlinkedModelSerializer):
+    klient = serializers.SlugRelatedField(queryset=Klient.objects.all(), slug_field='nazwisko')
+    samochod = serializers.SlugRelatedField(queryset=Samochod.objects.all(), slug_field='marka')
+
     class Meta:
         model = Wypozyczenie
-        fields = ['idWypozyczenia', 'dataStartu', 'dataKonca', 'MiejsceOdbioruSamochodu', 'MiejsceZwrotuSamochodu', 'canaWypozyczenia', 'klient', 'samochod']
+        fields = ['url', 'idWypozyczenia', 'dataStartu', 'dataKonca', 'MiejsceOdbioruSamochodu', 'MiejsceZwrotuSamochodu', 'canaWypozyczenia', 'klient', 'samochod']
+
+    def validate_canaWypozyczenia(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Cena musi być równa lub większa od 0", )
+        return value

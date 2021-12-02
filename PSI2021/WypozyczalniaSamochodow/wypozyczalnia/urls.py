@@ -9,5 +9,6 @@ urlpatterns = [
     path('samochod/<int:pk>', views.SamochodDetail.as_view(), name=views.SamochodDetail.name),
     path('wypozyczenie/', views.WypozyczenieList.as_view(), name=views.WypozyczenieList.name),
     path('wypozyczenie/<int:pk>', views.WypozyczenieDetail.as_view(), name=views.WypozyczenieDetail.name),
+    path('', views.RootApi.as_view(), name=views.RootApi.name),
 
 ]

@@ -38,8 +38,8 @@ class Wypozyczenie(models.Model):
     MiejsceOdbioruSamochodu = models.CharField(max_length=100)
     MiejsceZwrotuSamochodu = models.CharField(max_length=100)
     canaWypozyczenia = models.DecimalField(max_digits=10, decimal_places=2)
-    klient = models.ForeignKey(Klient, related_name='klienci', on_delete=models.SET_NULL, null=True)
-    samochod = models.ForeignKey(Samochod, related_name='samochody', on_delete=models.SET_NULL, null=True)
+    klient = models.ForeignKey(Klient, related_name='wypozyczenia', on_delete=models.SET_NULL, null=True)
+    samochod = models.ForeignKey(Samochod, related_name='wypozyczenia', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.idWypozyczenia + " " + self.dataStartu + " " + self.dataKonca
