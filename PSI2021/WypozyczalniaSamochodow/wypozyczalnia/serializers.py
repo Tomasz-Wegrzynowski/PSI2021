@@ -24,19 +24,21 @@ class SamochodSerializer(serializers.HyperlinkedModelSerializer):
 
 class KlientSerializer(serializers.HyperlinkedModelSerializer):
     wypozyczenia = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='wypozyczenie-detail')
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = Klient
-        fields = ['url', 'pesel', 'imie', 'nazwisko', 'kategoriaPrawajazdy', 'numerTelefonu', 'email', 'wypozyczenia']
+        fields = ['url', 'pesel', 'imie', 'nazwisko', 'kategoriaPrawajazdy', 'numerTelefonu', 'email', 'wypozyczenia', 'owner']
 
 
 class WypozyczenieSerializer(serializers.HyperlinkedModelSerializer):
     klient = serializers.SlugRelatedField(queryset=Klient.objects.all(), slug_field='nazwisko')
     samochod = serializers.SlugRelatedField(queryset=Samochod.objects.all(), slug_field='marka')
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = Wypozyczenie
-        fields = ['url', 'idWypozyczenia', 'dataStartu', 'dataKonca', 'MiejsceOdbioruSamochodu', 'MiejsceZwrotuSamochodu', 'canaWypozyczenia', 'klient', 'samochod']
+        fields = ['url', 'idWypozyczenia', 'dataStartu', 'dataKonca', 'MiejsceOdbioruSamochodu', 'MiejsceZwrotuSamochodu', 'canaWypozyczenia', 'klient', 'samochod', 'owner']
 
     def validate_canaWypozyczenia(self, value):
         if value < 0:
@@ -50,9 +52,22 @@ class UserSamochodSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url','numerRejestracyjny']
 
 
+class UserKlientSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Klient
+        fields = ['url', 'nazwisko']
+
+class UserWypozyczenieSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Wypozyczenie
+        fields = ['url', 'idWypozyczenia']
+
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     samochody = UserSamochodSerializer(many=True,read_only=True)
+    klienci = UserKlientSerializer(many=True, read_only=True)
+    wypozyczenia = UserWypozyczenieSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
-        fields = ['url','pk','username','samochody']
+        fields = ['url', 'pk', 'username', 'samochody', 'klienci', 'wypozyczenia']

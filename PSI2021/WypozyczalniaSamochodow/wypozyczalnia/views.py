@@ -31,12 +31,16 @@ class KlientList(generics.ListCreateAPIView):
     filter_fields = ['imie', 'nazwisko', 'pesel']
     search_fields = ['imie', 'nazwisko', 'pesel']
     ordering_fields = ['imie', 'nazwisko', 'pesel']
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCurrentUserOwnerOrReadOnly,)
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 class KlientDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Klient.objects.all()
     serializer_class = KlientSerializer
     name = 'klient-detail'
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCurrentUserOwnerOrReadOnly,)
 
 
 class SamochodFilter(FilterSet):
@@ -57,7 +61,7 @@ class SamochodList(generics.ListCreateAPIView):
     filter_class = SamochodFilter
     search_fields = ['numerRejestracyjny', 'marka', 'typ', 'kolor']
     ordering_fields = ['numerRejestracyjny', 'marka']
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCurrentUserOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -67,7 +71,7 @@ class SamochodDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Samochod.objects.all()
     serializer_class = SamochodSerializer
     name = 'samochod-detail'
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCurrentUserOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class WypozyczenieFilter(FilterSet):
@@ -86,18 +90,24 @@ class WypozyczenieList(generics.ListCreateAPIView):
     filter_class = WypozyczenieFilter
     search_fields = ['klient', 'samochod', 'MiejsceOdbioruSamochodu', 'MiejsceZwrotuSamochodu']
     ordering_fields = ['klient', 'samochod', 'MiejsceOdbioruSamochodu', 'MiejsceZwrotuSamochodu']
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCurrentUserOwnerOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class WypozyczenieDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Wypozyczenie.objects.all()
     serializer_class = WypozyczenieSerializer
     name = 'wypozyczenie-detail'
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCurrentUserOwnerOrReadOnly,)
 
 
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     name = 'user-list'
+
 
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()

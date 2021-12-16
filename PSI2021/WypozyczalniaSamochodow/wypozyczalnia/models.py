@@ -10,6 +10,7 @@ class Klient(models.Model):
     kategoriaPrawajazdy = models.CharField(max_length=20)
     numerTelefonu = models.CharField(max_length=11)
     email = models.CharField(max_length=80, null=True)
+    owner = models.ForeignKey('auth.User', related_name='klienci', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('nazwisko',)
@@ -47,6 +48,7 @@ class Wypozyczenie(models.Model):
     canaWypozyczenia = models.DecimalField(max_digits=10, decimal_places=2)
     klient = models.ForeignKey(Klient, related_name='wypozyczenia', on_delete=models.SET_NULL, null=True)
     samochod = models.ForeignKey(Samochod, related_name='wypozyczenia', on_delete=models.SET_NULL, null=True)
+    owner = models.ForeignKey('auth.User', related_name='wypozyczenia', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('MiejsceOdbioruSamochodu',)
