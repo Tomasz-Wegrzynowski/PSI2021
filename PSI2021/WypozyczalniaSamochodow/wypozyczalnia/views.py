@@ -1,9 +1,12 @@
 from .models import Klient, Samochod, Wypozyczenie
-from .serializers import KlientSerializer, SamochodSerializer, WypozyczenieSerializer
+from .serializers import KlientSerializer, SamochodSerializer, WypozyczenieSerializer, UserSerializer
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from django_filters import AllValuesFilter, DateTimeFilter, NumberFilter, FilterSet
+from django.contrib.auth.models import User
+from rest_framework import permissions
+from .custompermission import IsCurrentUserOwnerOrReadOnly
 #from django.http import HttpResponse
 
 # Create your views here.
@@ -17,6 +20,7 @@ class RootApi(generics.GenericAPIView):
             'klienci': reverse(KlientList.name, request=request),
             'samochody': reverse(SamochodList.name, request=request),
             'wypozyczenia': reverse(WypozyczenieList.name, request=request),
+            'użytkownicy': reverse(UserList.name, request=request),
         })
 
 
@@ -53,12 +57,17 @@ class SamochodList(generics.ListCreateAPIView):
     filter_class = SamochodFilter
     search_fields = ['numerRejestracyjny', 'marka', 'typ', 'kolor']
     ordering_fields = ['numerRejestracyjny', 'marka']
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCurrentUserOwnerOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class SamochodDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Samochod.objects.all()
     serializer_class = SamochodSerializer
     name = 'samochod-detail'
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsCurrentUserOwnerOrReadOnly,)
 
 
 class WypozyczenieFilter(FilterSet):
@@ -83,3 +92,14 @@ class WypozyczenieDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Wypozyczenie.objects.all()
     serializer_class = WypozyczenieSerializer
     name = 'wypozyczenie-detail'
+
+
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    name = 'user-list'
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    name = 'user-detail'

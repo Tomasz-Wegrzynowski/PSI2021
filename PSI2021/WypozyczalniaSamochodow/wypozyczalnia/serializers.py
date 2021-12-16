@@ -1,13 +1,15 @@
 from rest_framework import serializers
 from .models import Klient, Samochod, Wypozyczenie
+from django.contrib.auth.models import User
 
 
 class SamochodSerializer(serializers.HyperlinkedModelSerializer):
     wypozyczenia = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='wypozyczenie-detail')
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = Samochod
-        fields = ['url', 'idSamochodu', 'numerRejestracyjny', 'marka', 'typ', 'kolor', 'liczbaMiejsc', 'liczbaDrzwi', 'typPaliwa', 'typSkrzyniBiegow', 'uszkodzenia', 'wypozyczenia']
+        fields = ['url', 'idSamochodu', 'numerRejestracyjny', 'marka', 'typ', 'kolor', 'liczbaMiejsc', 'liczbaDrzwi', 'typPaliwa', 'typSkrzyniBiegow', 'uszkodzenia', 'wypozyczenia', 'owner']
 
     def validate_liczbaMiejsc(self, value):
         if value <= 0:
@@ -40,3 +42,17 @@ class WypozyczenieSerializer(serializers.HyperlinkedModelSerializer):
         if value < 0:
             raise serializers.ValidationError("Cena musi być równa lub większa od 0", )
         return value
+
+
+class UserSamochodSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Samochod
+        fields = ['url','numerRejestracyjny']
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    samochody = UserSamochodSerializer(many=True,read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['url','pk','username','samochody']
