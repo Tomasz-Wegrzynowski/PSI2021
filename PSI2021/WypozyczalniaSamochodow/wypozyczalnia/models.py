@@ -21,7 +21,7 @@ class Klient(models.Model):
 
 class Samochod(models.Model):
     idSamochodu = models.AutoField(primary_key=True)
-    numerRejestracyjny = models.CharField(max_length=10)
+    numerRejestracyjny = models.CharField(max_length=10, unique=True)
     marka = models.CharField(max_length=45)
     typ = models.CharField(max_length=45)
     kolor = models.CharField(max_length=45, null=True)
