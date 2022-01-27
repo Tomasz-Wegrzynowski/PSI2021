@@ -36,7 +36,7 @@ class Samochod(models.Model):
         ordering = ('marka',)
 
     def __str__(self):
-        return self.marka
+        return self.numerRejestracyjny
 
 
 class Wypozyczenie(models.Model):
